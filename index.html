@@ -149,7 +149,7 @@ ol.steps li b { font-weight: 500; color: var(--accent); }
 #about { padding-block: clamp(56px, 9vw, 110px) 0; }
 .about-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 36px 56px; align-items: start; }
 .portrait {
-  aspect-ratio: 4 / 5; max-width: 100%; border: 5px solid var(--frame); background: var(--panel);
+  aspect-ratio: 4 / 5; max-width: 100%; border: 5px solid var(--frame); background: var(--panel); transition: border-color .6s ease;
   display: grid; place-items: center; position: relative; overflow: hidden;
 }
 .portrait img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -294,7 +294,7 @@ const PROJECTS = [
     materials: 'Silk-cotton, zari, organza overlays',
     techniques: 'Draping, offset border embroidery, digital motif break-up',
     steps: [['Research', 'Temple borders, zari weights, loom limits'], ['Develop', 'Motif glitch studies on paper and screen'], ['Construct', 'Draped bodices, pleated panel skirts'], ['Present', 'Five looks, one continuous border']],
-    theme: { bg: '#3A0D1A', fg: '#F6E7CF', muted: '#C9A98F', accent: '#E8B04A', scheme: 'dark' },
+    theme: { bg: '#3A0D1A', frame: '#F2C6CF', fg: '#F6E7CF', muted: '#C9A98F', accent: '#E8B04A', scheme: 'dark' },
     type: { family: "'Fraunces', Georgia, serif", weight: 600, style: 'italic', transform: 'none', spacing: '-0.02em' },
     pattern: 'weave', pal: ['#3A0D1A', '#7A1630', '#E8B04A', '#F6E7CF'], garment: 'dress', images: []
   },
@@ -306,7 +306,7 @@ const PROJECTS = [
     materials: 'Reclaimed denim, canvas, brass hardware, rust-dyed thread',
     techniques: 'Deconstruction, visible mending, flat pattern drafting',
     steps: [['Research', 'Workwear archives, repair cultures'], ['Develop', 'Patch maps drawn over every seam'], ['Construct', 'Chore jackets, aprons, wide trousers'], ['Present', 'Garments shown beside their offcuts']],
-    theme: { bg: '#CFD3D2', fg: '#1B1F20', muted: '#464E50', accent: '#A33A14', scheme: 'light' },
+    theme: { bg: '#CFD3D2', frame: '#1F2B2A', fg: '#1B1F20', muted: '#464E50', accent: '#A33A14', scheme: 'light' },
     type: { family: "'Anton', Impact, 'Arial Narrow', sans-serif", weight: 400, style: 'normal', transform: 'uppercase', spacing: '0.01em' },
     pattern: 'patch', pal: ['#8FA3B3', '#E8EDEF', '#A33A14', '#1B1F20'], garment: 'jacket', images: []
   },
@@ -318,7 +318,7 @@ const PROJECTS = [
     materials: 'Brushed cotton jersey, muslin, shell buttons',
     techniques: 'Print design, relaxed block adaptation, French seams',
     steps: [['Research', 'Sleep habits, home routines, comfort fits'], ['Develop', 'Dot prints at three scales'], ['Construct', 'Shirt, shorts, robe, tote'], ['Present', 'Photographed at home, morning light']],
-    theme: { bg: '#F6D5DC', fg: '#3B1E2B', muted: '#7A4A5E', accent: '#B02E62', scheme: 'light' },
+    theme: { bg: '#F6D5DC', frame: '#4A1230', fg: '#3B1E2B', muted: '#7A4A5E', accent: '#B02E62', scheme: 'light' },
     type: { family: "'Bricolage Grotesque', 'Helvetica Neue', sans-serif", weight: 800, style: 'normal', transform: 'none', spacing: '-0.03em' },
     pattern: 'dots', pal: ['#F6D5DC', '#F2A7B8', '#B9D6C9', '#FFF4E8'], garment: 'dress', images: []
   },
@@ -330,7 +330,7 @@ const PROJECTS = [
     materials: 'Ripstop nylon, reflective tape, mesh lining',
     techniques: 'Technical pattern making, CLO 3D fitting, bonded seams',
     steps: [['Research', 'Night markets, signage, reflective fabrics'], ['Develop', 'Stripe placement tested in CLO 3D'], ['Construct', 'Boxy jackets, cargo pants, vests'], ['Present', 'Lookbook shot with flash at night']],
-    theme: { bg: '#130508', fg: '#F6EDEE', muted: '#CDA9AE', accent: '#FF3B4E', scheme: 'dark' },
+    theme: { bg: '#130508', frame: '#F2B8BE', fg: '#F6EDEE', muted: '#CDA9AE', accent: '#FF3B4E', scheme: 'dark' },
     type: { family: "'Syne', 'Helvetica Neue', sans-serif", weight: 800, style: 'normal', transform: 'uppercase', spacing: '-0.01em' },
     pattern: 'tartan', pal: ['#8E0F1F', '#0D0D12', '#F2EDEE', '#E3B93C'], worldOpacity: 0.38, garment: 'jacket', images: []
   },
@@ -342,7 +342,7 @@ const PROJECTS = [
     materials: 'Handloom cotton, natural indigo vat',
     techniques: 'Shibori folding, vat dyeing, swatch documentation',
     steps: [['Research', 'Indigo chemistry, shibori traditions'], ['Develop', 'Forty swatches, each with a recipe card'], ['Construct', 'Shirts and wraps from the best six'], ['Present', 'Swatch ledger shown next to the garments']],
-    theme: { bg: '#E3EAF3', fg: '#0E2447', muted: '#4A5F85', accent: '#1F4FBF', scheme: 'light' },
+    theme: { bg: '#E3EAF3', frame: '#0F2250', fg: '#0E2447', muted: '#4A5F85', accent: '#1F4FBF', scheme: 'light' },
     type: { family: "'Instrument Serif', Georgia, serif", weight: 400, style: 'italic', transform: 'none', spacing: '-0.01em' },
     pattern: 'wave', pal: ['#E3EAF3', '#9DB4D6', '#3D5C99', '#0E2447'], garment: 'dress', images: []
   }
@@ -449,9 +449,9 @@ const current = () => byId(preview || active);
 
 function applyTheme(p) {
   const s = root.style;
-  const keys = ['--bg', '--fg', '--muted', '--accent', '--d-family', '--d-weight', '--d-style', '--d-case', '--d-track', 'color-scheme'];
+  const keys = ['--bg', '--fg', '--muted', '--accent', '--d-family', '--d-weight', '--d-style', '--d-case', '--d-track', '--frame', 'color-scheme'];
   if (!p) { keys.forEach((k) => s.removeProperty(k)); return; }
-  s.setProperty('--bg', p.theme.bg); s.setProperty('--fg', p.theme.fg);
+  s.setProperty('--frame', p.theme.frame); s.setProperty('--bg', p.theme.bg); s.setProperty('--fg', p.theme.fg);
   s.setProperty('--muted', p.theme.muted); s.setProperty('--accent', p.theme.accent);
   s.setProperty('--d-family', p.type.family); s.setProperty('--d-weight', p.type.weight);
   s.setProperty('--d-style', p.type.style); s.setProperty('--d-case', p.type.transform);
