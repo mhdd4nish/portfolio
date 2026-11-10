@@ -18,6 +18,7 @@
   --d-track: -0.02em;
   --body: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --mono: 'DM Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  --me-font: 'Fraunces', Georgia, 'Times New Roman', serif;
 }
 /* The home view is one deliberate light look. Each project then sets its own world on top of it. */
 
@@ -78,18 +79,18 @@ section { scroll-margin-top: 64px; }
 .hero { padding-block: clamp(40px, 9vw, 110px) clamp(36px, 6vw, 72px); }
 .eyebrow { font-family: var(--mono); font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin: 0 0 20px; }
 h1#name {
-  font-family: var(--d-family); font-weight: var(--d-weight); font-style: var(--d-style);
-  text-transform: var(--d-case); letter-spacing: var(--d-track);
-  font-size: clamp(3.4rem, 15vw, 11.5rem); line-height: .95; margin: 0; min-height: 1.9em;
+  font-family: var(--me-font); font-weight: 600; font-style: italic;
+  text-transform: none; letter-spacing: -0.02em;
+  font-size: clamp(3rem, 11vw, 9rem); line-height: 1.05; margin: 0;
   text-wrap: balance; overflow-wrap: anywhere;
 }
 .lede { max-width: 38rem; font-size: 1.15rem; margin: 24px 0 0; }
 .now {
-  display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: baseline; margin: 32px 0 0;
-  font-family: var(--mono); font-size: .8rem; letter-spacing: .06em; text-transform: uppercase;
+  display: flex; flex-wrap: nowrap; gap: 14px; align-items: baseline; margin: 32px 0 0;
+  font-family: var(--mono); font-size: .8rem; line-height: 1.6; letter-spacing: .06em; text-transform: uppercase;
 }
-.now b { color: var(--accent); font-weight: 500; }
-.now span#now { color: var(--fg); min-width: 0; }
+.now b { color: var(--accent); font-weight: 500; flex: none; white-space: nowrap; }
+.now span#now { color: var(--fg); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 /* section heads */
 h2 {
@@ -99,6 +100,7 @@ h2 {
 }
 .head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 12px 32px; margin-bottom: 28px; }
 .hint { font-family: var(--mono); font-size: .78rem; letter-spacing: .05em; color: var(--muted); margin: 0; max-width: 28rem; }
+#work h2 { font-family: var(--me-font); font-weight: 600; font-style: italic; text-transform: none; letter-spacing: -0.02em; }
 
 /* project index */
 #list { border-bottom: 1px solid var(--line); }
@@ -438,7 +440,7 @@ function buildList() {
 }
 
 /* world state: active (opened) and preview (hovered) */
-let active = null, preview = null, cycle = 0;
+let active = null, preview = null;
 const current = () => byId(preview || active);
 
 function applyTheme(p) {
@@ -457,12 +459,15 @@ function renderWorld(p) {
   w.style.opacity = p && p.worldOpacity ? p.worldOpacity : '';
   w.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" style="opacity:${p ? 1 : .1}"><defs>${patDef('wp', p, p ? 2.4 : 1)}</defs><rect width="100%" height="100%" fill="url(#wp)"/></svg>`;
 }
+let shown = null;
 function setView() {
   const p = current();
+  const key = p ? p.id : 'home';
+  if (key === shown) return;
+  shown = key;
   applyTheme(p);
   renderWorld(p);
   $('#now').textContent = p ? `${p.title}. ${p.mood}.` : 'Choose a project below. The whole site changes with it.';
-  if (p) $('#name').removeAttribute('style');
 }
 
 function setActive(id, scroll) {
@@ -483,13 +488,14 @@ function bind() {
   document.querySelectorAll('.row').forEach((btn) => {
     const id = btn.dataset.id;
     btn.addEventListener('click', () => setActive(active === id ? null : id, active !== id));
-    if (canHover) {
-      btn.addEventListener('pointerenter', () => { preview = id; setView(); });
-      btn.addEventListener('pointerleave', () => { preview = null; setView(); });
-    }
-    btn.addEventListener('focus', () => { if (!canHover) return; preview = id; setView(); });
-    btn.addEventListener('blur', () => { preview = null; setView(); });
+    if (canHover) btn.addEventListener('pointerenter', () => { preview = id; setView(); });
+    btn.addEventListener('focus', () => { if (btn.matches(':focus-visible')) { preview = id; setView(); } });
+    btn.addEventListener('blur', () => { if (preview === id) { preview = null; setView(); } });
   });
+  if (canHover) {
+    $('#list').addEventListener('pointerleave', () => { preview = null; setView(); });
+    document.querySelectorAll('.detail').forEach((d) => d.addEventListener('pointerenter', () => { preview = null; setView(); }));
+  }
   $('#copy').addEventListener('click', async () => {
     const btn = $('#copy');
     try {
@@ -506,15 +512,6 @@ function bind() {
     const p = byId(location.hash.slice(1));
     if (p && p.id !== active) setActive(p.id, true);
   });
-  /* the name cycles through every project's typeface while no project is chosen */
-  if (!reduced) {
-    setInterval(() => {
-      const n = $('#name');
-      if (current()) return;
-      const t = PROJECTS[cycle++ % PROJECTS.length].type;
-      n.setAttribute('style', fontCSS(t));
-    }, 2200);
-  }
 }
 
 buildStatic();
